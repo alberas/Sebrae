@@ -89,21 +89,13 @@ namespace Sebrae.Repositorio
         {
             using (SqlConnection conn = new SqlConnection(getConnectionString()))
             {
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO conta(nome, descricao) VALUES(@nome, @descricao)", conn))
+                using (SqlCommand cmd = new SqlCommand("UPDATE conta SET nome = @nome, descricao = @descricao WHERE id = @id", conn))
                 {
                     conn.Open();
                     cmd.Parameters.AddWithValue("nome", conta.Nome);
                     cmd.Parameters.AddWithValue("descricao", conta.Descricao);
+                    cmd.Parameters.AddWithValue("id", conta.Id);
                     cmd.ExecuteNonQuery();
-
-
-                    cmd.Parameters.Clear();
-                    cmd.CommandText = "SELECT SCOPE_IDENTITY()";
-
-                    int id = (int)cmd.ExecuteScalar();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    conta.Id = id;
 
                     return conta;
                 }

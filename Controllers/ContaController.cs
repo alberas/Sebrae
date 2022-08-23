@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Web.Http.Cors;
 
 namespace Sebrae.Controllers
 {
+    [EnableCors(origins:"*", headers:"*", methods: "*")]
     [ApiController]
     [Route("[controller]")]
     public class ContaController : ControllerBase
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        private static Random random = new Random();
-
         private readonly ILogger<ContaController> _logger;
 
         public ContaController(ILogger<ContaController> logger)
@@ -23,8 +22,8 @@ namespace Sebrae.Controllers
             return Repositorio.Conta.RetornaContas();
         
         }
-        
 
+        
         [HttpPost(Name = "CriarConta")]
         public Model.Conta Post([FromQuery] string nome, [FromQuery] string descricao)
         {
@@ -38,11 +37,13 @@ namespace Sebrae.Controllers
 
         }
 
+        
         [HttpPut(Name = "AtualizarConta")]
         public Model.Conta Put([FromQuery] int id, [FromQuery] string nome, [FromQuery] string descricao)
         {
 
             Model.Conta c = new Model.Conta();
+            c.Id = id;
             c.Nome = nome;
             c.Descricao = descricao;
 
@@ -51,13 +52,13 @@ namespace Sebrae.Controllers
 
         }
 
+        
         [HttpDelete(Name = "ExcluirConta")]
-        public Model.Conta Delete([FromQuery] int id, [FromQuery] string nome, [FromQuery] string descricao)
+        public Model.Conta Delete([FromQuery] int id)
         {
 
             Model.Conta c = new Model.Conta();
-            c.Nome = nome;
-            c.Descricao = descricao;
+            c.Id = id;
 
             Repositorio.Conta.Excluir(c);
             return c;

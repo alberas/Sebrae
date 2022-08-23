@@ -5,9 +5,100 @@
     <title></title>
 </head>
 <body>
-    <script>
-        fetch("")
 
+    <div id="tabela">
+
+    </div>
+    <div>
+        <div>
+            <label>ID</label>
+            <input type="text" id="id" name="id" value="" readonly="readonly" />
+        </div>
+        <div>
+            <label>Nome</label>
+            <input type="text" id="nome" name="nome" value="" />
+        </div>
+        <div>
+            <label>Descrição</label>
+            <input type="text" id="descricao" name="descricao" value="" />
+        </div>
+        <div>
+            <input type="button" onclick="FnSalvar()" value="Salvar" />
+            <input type="button" onclick="FnExcluir()" value="Excluir" />
+        </div>
+    </div>
+    <script>
+        const RetornaLista = () => {
+            fetch("https://localhost:7156/Conta").then(r => {
+                return r.json();
+            }).then(data => {
+                data.forEach(item => {
+                    let dv = document.createElement("div");
+                    dv.appendChild(createText(item.id));
+                    dv.appendChild(createText(item.nome));
+                    dv.appendChild(createText(item.descricao));
+
+                    dv.addEventListener("click", (linha) => {
+                        console.log(linha);
+                        document.getElementById("id").value = item.id;
+                        document.getElementById("nome").value = item.nome;
+                        document.getElementById("descricao").value = item.descricao;
+                    }, true);
+
+                    document.getElementById("tabela").appendChild(dv);
+
+                });
+            });
+        };
+        window.addEventListener("load", () => {
+            RetornaLista();
+        });
+
+        const createText = (text) => {
+            let sp = document.createElement("span");
+            sp.innerText = text;
+            sp.style.border = 'solid 1px lightgrey';
+            sp.style.display = 'inline-block';
+            sp.style.width = '300px';
+            return sp;
+        };
+
+
+        const FnSalvar = () => {
+            let id = document.getElementById("id").value;
+            let nome = document.getElementById("nome").value;
+            let desc = document.getElementById("descricao").value;
+
+            fetch("https://localhost:7156/Conta?id=" + id + "&nome=" + nome + "&descricao=" + desc, { method: 'PUT', headers: new Headers() }).then(r => {
+                return r.json();
+            }).then(data => {
+                alert("DADOS GRAVADOS COM SUCESSO");
+                document.getElementById("tabela").innerHTML = "";
+                LimparForm();
+                RetornaLista();
+
+            });
+        };
+
+        const FnExcluir = () => {
+            let id = document.getElementById("id").value;
+
+            fetch("https://localhost:7156/Conta?id=" + id, { method: 'DELETE', headers: new Headers() }).then(r => {
+                return r.json();
+            }).then(data => {
+                alert("DADOS EXCLUIDOS COM SUCESSO");
+                document.getElementById("tabela").innerHTML = "";
+                LimparForm();
+                RetornaLista();
+
+            });
+        };
+
+        const LimparForm = () => {
+            document.getElementById("id").value = "";
+            document.getElementById("nome").value = "";
+            document.getElementById("descricao").value = "";
+        };
     </script>
 </body>
 </html>
